@@ -12,6 +12,14 @@ BAK_DIR=$TMP_DIR/bak_rra
 XML_DIR=$TMP_DIR/xml
 NEW_RRA_DIR=$TMP_DIR/new_rra
 
+# In order to locate the timestamp, you will need convert one rrd file into xml prior to run this script,
+# and then find out the line with incorrect data.
+#
+# Be aware of escape backslash
+INCORRECT_DATA_TIMESTAMP="<!-- 2019-01-08 19:05:00 CST \/ 1546945500 -->"
+
+NEW_DATA="$INCORRECT_DATA_TIMESTAMP <row><v>NaN<\/v><v>NaN<\/v><\/row>"
+
 if [ -d $TMP_DIR ]; then
   rmdir -rf $TMP_DIR 
 fi
@@ -30,9 +38,9 @@ for filename in *.rrd; do
    rrdtool dump $filename $XML_FILE
 
    # Use sed to update XML file
-   # If you prefer other tool, feel free to change below
-   sed -i -e 's/<!-- 2019-01-08 19:05:00 CST \/ 1546945500 -->.*/<!-- 2019-01-08 19:05:00 CST \/ 1546945500 --> <row><v>NaN<\/v><v>NaN<\/v><\/row>/g' $XML_FILE
-   sed -i -e 's/<!-- 2019-01-08 19:10:00 CST \/ 1546945800 -->.*/<!-- 2019-01-08 19:10:00 CST \/ 1546945800 --> <row><v>NaN<\/v><v>NaN<\/v><\/row>/g' $XML_FILE
+   # If you prefer other tool, feel free to change
+   #
+   sed -i -e "s/$INCORRECT_DATA_TIMESTAMP.*/$NEW_DATA/g' $XML_FILE
 
    # Restore XML file to RRD 
    rrdtool restore $XML_FILE $NEW_RRA_DIR/$filename -f
