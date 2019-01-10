@@ -40,7 +40,7 @@ for filename in *.rrd; do
    # Use sed to update XML file
    # If you prefer other tool, feel free to change
    #
-   sed -i -e "s/$INCORRECT_DATA_TIMESTAMP.*/$NEW_DATA/g' $XML_FILE
+   sed -i -e "s/$INCORRECT_DATA_TIMESTAMP.*/$NEW_DATA/g" $XML_FILE
 
    # Restore XML file to RRD 
    rrdtool restore $XML_FILE $NEW_RRA_DIR/$filename -f
